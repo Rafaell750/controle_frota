@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Veículos Cadastrados</title>
+</head>
+<body>
+    <h1>Veículos Cadastrados</h1>
+    <ul>
+        {% for veiculo in veiculos %}
+        <li>{{ veiculo.marca }} - {{ veiculo.modelo }} ({{ veiculo.placa }}) - {{ veiculo.tipo }} - {{ veiculo.capacidade }} pessoas</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Voltar</a>
+</body>
+</html>

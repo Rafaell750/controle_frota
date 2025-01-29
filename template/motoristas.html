@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Motoristas Cadastrados</title>
+</head>
+<body>
+    <h1>Motoristas Cadastrados</h1>
+    <ul>
+        {% for motorista in motoristas %}
+        <li>{{ motorista.nome }} - {{ motorista.cpf }} - {{ motorista.habilitacao }} - 
+            Validade CNH: {{ motorista.validade_cnh }} - Status: {{ motorista.status_cnh }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Voltar</a>
+</body>
+</html>

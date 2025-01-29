@@ -1,7 +1,7 @@
 # Importa as classes necessárias do sistema
 from sistema_frota import SistemaFrota
-from veiculo import Veiculo
-from motorista import Motorista
+from veiculo import Veiculo, verificar_vencimento_pagamento, verificar_vencimento_manutencao, listar_veiculos
+from motorista import Motorista, verificar_validade_cnh, listar_motoristas
 
 from datetime import datetime # data atual
 
@@ -9,49 +9,6 @@ from datetime import datetime # data atual
 # Cria uma instância do sistema de frota
 sistema = SistemaFrota()
 
-#_____________________________________________________________________________________
-# Função para verificar se a CNH está vencida ou prestes a vencer
-def verificar_validade_cnh(validade_cnh):
-    """
-    Verifica se a CNH está vencida ou prestes a vencer.
-    Se estiver vencida ou prestes a vencer (menos de 30 dias para a data atual),
-    retorna True para indicar que há um alerta.
-    """
-    # Converte a string da validade da CNH para um objeto datetime
-    validade_cnh = datetime.strptime(validade_cnh, "%Y-%m-%d")
-    
-    # Obtém a data atual
-    data_atual = datetime.now()
-    
-    # Verifica se a CNH já venceu ou se vai vencer dentro de 30 dias
-    if validade_cnh < data_atual:
-        return "Vencida"
-    elif (validade_cnh - data_atual).days <= 30:
-        return "Prestes a vencer"
-    else:
-        return "\033[0;32mVálida\033[0m"
-
-# Função para exibir motoristas cadastrados
-def listar_motoristas():
-    """
-    Exibe todos os motoristas cadastrados e o status da CNH (Vencida, Prestes a Vencer, Válida).
-    """
-    print("\n--- Motoristas Cadastrados ---")
-    
-    # Verifica se há motoristas cadastrados
-    if sistema.motoristas:
-        for motorista in sistema.motoristas:
-            # Verifica o status da CNH
-            status_cnh = verificar_validade_cnh(motorista.validade_cnh)
-            
-            # Exibe as informações do motorista com o status da CNH
-            print(f"Nome: {motorista.nome}, CPF: {motorista.cpf}, Habilitação: {motorista.habilitacao}, "
-                  f"Validade CNH: {motorista.validade_cnh}, Status CNH: {status_cnh}")
-    else:
-        print("Nenhum motorista cadastrado.")
-
-
-#____________________________________________________________________________________________________________
 # Função para exibir o menu principal
 def exibir_menu():
     """
@@ -73,19 +30,35 @@ while True:
 
     # Opção 1: Cadastrar Veículo
     if opcao == "1":
-        # Solicita ao usuário os dados do veículo
-        marca = input("Marca do veículo: ")  # Exemplo: "Toyota"
-        modelo = input("Modelo do veículo: ")  # Exemplo: "Corolla"
-        placa = input("Placa do veículo: ")  # Exemplo: "ABC-1234"
-        tipo = input("Tipo do veículo (Ex: Carro, Ônibus, Caminhão): ")  # Exemplo: "Ônibus"
-        capacidade = int(input("Capacidade do veículo (número de pessoas): "))  # Exemplo: "40"
+        marca = input("Marca do veículo: ")
+        modelo = input("Modelo do veículo: ")
+        placa = input("Placa do veículo: ")
+        tipo = input("Tipo do veículo (Ex: Carro, Ônibus, Caminhão): ")
+        capacidade = int(input("Capacidade do veículo (número de pessoas): "))
+        data_vencimento = input("Data do vencimento do seguro (AAAA-MM-DD): ")
+        data_manutencao = input("Data da última manutenção (AAAA-MM-DD): ") 
 
         # Cria um novo objeto Veículo com todos os argumentos
-        veiculo = Veiculo(marca, modelo, placa, tipo, capacidade)
+        veiculo = Veiculo(marca, modelo, placa, tipo, capacidade, data_vencimento, data_manutencao)
 
         # Cadastra o veículo no sistema
         sistema.cadastrar_veiculo(veiculo)
-        print(f"Veículo {modelo} cadastrado com sucesso!")  # Confirmação para o usuário
+        print(f"\nVeículo {modelo} cadastrado com sucesso!")
+
+        # Verifica se o seguro está vencido ou prestes a vencer
+        status_seguro = verificar_vencimento_pagamento(veiculo.data_vencimento)
+
+        if status_seguro == "Vencido":
+            print("\033[91mALERTA: O seguro está vencido! Verifique a renovação.\033[0m")
+        elif status_seguro == "Prestes a vencer":
+            print("\033[93mALERTA: O seguro está prestes a vencer! Verifique a renovação.\033[0m")
+
+         # Verifica se a manutenção está vencida ou próxima
+        status_manutencao = verificar_vencimento_manutencao(veiculo.data_manutencao)
+        if status_manutencao == "Atrasada":
+            print("\033[91mALERTA: A manutenção está atrasada! Agende uma revisão.\033[0m")
+        elif status_manutencao == "Prestes a atrasar":
+            print("\033[93mALERTA: A manutenção está prestes a atrasar! Planeje uma revisão.\033[0m")
 
 
     # Opção 2: Cadastrar Motorista
@@ -96,6 +69,11 @@ while True:
         habilitacao = input("Tipo de habilitação: ")
         validade_cnh = input("Validade da CNH (AAAA-MM-DD): ")
 
+        # Cria o objeto Motorista e cadastra
+        motorista = Motorista(nome, cpf, habilitacao, validade_cnh)
+        sistema.cadastrar_motorista(motorista)
+        print(f"\nMotorista {nome} cadastrado com sucesso!")  # Confirmação para o usuário
+
         # Verifica se a CNH está vencida ou prestes a vencer
         status_cnh = verificar_validade_cnh(validade_cnh)
 
@@ -105,20 +83,23 @@ while True:
         elif status_cnh == "Prestes a vencer":
             print("\033[93mALERTA: A CNH está prestes a vencer! Verifique a renovação.\033[0m")  # Alerta em amarelo
 
-        # Cria o objeto Motorista e cadastra
-        motorista = Motorista(nome, cpf, habilitacao, validade_cnh)
-        sistema.cadastrar_motorista(motorista)
-        print(f"Motorista {nome} cadastrado com sucesso!")  # Confirmação para o usuário
+        
 
     # Opção 3: Listar Veículos Cadastrados
     elif opcao == "3":
         print("\n--- Veículos Cadastrados ---")
-        # Verifica se há veículos cadastrados
-        if sistema.veiculos:  # Verifica se a lista de veículos não está vazia
+    
+        if sistema.veiculos:  # Agora acessando corretamente os veículos cadastrados
             for veiculo in sistema.veiculos:
-                print(f"Marca: {veiculo.marca}, Modelo: {veiculo.modelo}, Placa: {veiculo.placa}, Tipo: {veiculo.tipo}, Capacidade: {veiculo.capacidade}")
+                status_seguro = verificar_vencimento_pagamento(veiculo.data_vencimento)
+                status_manutencao = verificar_vencimento_manutencao(veiculo.data_manutencao)
+
+                print(f"Marca: {veiculo.marca}, Modelo: {veiculo.modelo}, Placa: {veiculo.placa}, "
+                  f"Tipo: {veiculo.tipo}, Capacidade: {veiculo.capacidade}, "
+                  f"Status seguro: {status_seguro}, Status manutenção: {status_manutencao}")
         else:
-            print("Nenhum veículo cadastrado.")  # Exibe caso não haja veículos cadastrados
+            print("Nenhum veículo cadastrado.")  # Caso a lista esteja vazia
+
 
     # Opção 4: Listar Motoristas Cadastrados
     elif opcao == "4":
