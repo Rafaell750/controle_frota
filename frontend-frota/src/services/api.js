@@ -39,4 +39,24 @@ export const addDriver = async (driver) => {
 export const deleteVehicle = async (id) => {
     await fetch(`${API_URL}/veiculos/${id}`, { method: "DELETE" });
   };
+
+  export const registerUser = async (user) => {
+    const response = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
+    });
+  
+    return response.json();
+  };
+  
+  export const loginUser = async (credentials) => {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(credentials),
+    });
+  
+    return response.json();
+  };
   
