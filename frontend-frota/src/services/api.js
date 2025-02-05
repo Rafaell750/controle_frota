@@ -14,9 +14,19 @@ export const fetchVehicles = async () => {
   };
 
 export const fetchDrivers = async () => {
-  const response = await fetch(`${API_URL}/motoristas`);
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/motoristas`);
+      if (!response.ok) {
+          throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+      }
+      return await response.json();
+  } catch (error) {
+      console.error("Erro ao buscar motoristas:", error);
+      throw error;
+  }
 };
+
+
 
 export const addVehicle = async (vehicle) => {
   const response = await fetch(`${API_URL}/veiculos`, {
@@ -59,4 +69,6 @@ export const deleteVehicle = async (id) => {
   
     return response.json();
   };
+
+  
   

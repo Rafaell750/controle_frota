@@ -101,10 +101,15 @@ def get_veiculos():
 def listar_motoristas():
     conexao = conectar_bd()
     cursor = conexao.cursor()
-    cursor.execute("SELECT * FROM motoristas")
-    motoristas = cursor.fetchall()
+    
+    # Pegando os dados
+    cursor.execute("SELECT id, nome, cpf, habilitacao, validade_cnh FROM motoristas")
+    colunas = [desc[0] for desc in cursor.description]  # Captura os nomes das colunas
+    motoristas = [dict(zip(colunas, row)) for row in cursor.fetchall()]  # Converte para dicionário
+    
     conexao.close()
-    return jsonify(motoristas)
+    return jsonify(motoristas)  # Retorna uma lista de objetos JSON
+
 
 @app.route('/veiculos/<int:id>', methods=['DELETE'])
 def delete_veiculo(id):

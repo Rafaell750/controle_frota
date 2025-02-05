@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import VehicleForm from "./components/VehicleForm";
 import VehicleList from "./components/VehicleList";
+import DriverForm from "./components/DriverForm";
+import DriverList from "./components/DriverList";
 import { fetchVehicles, fetchDrivers } from "./services/api";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import DriverForm from "./components/DriverForm";
-import DriverList from "./components/DriverList";
-
-
 
 // Rota privada para proteger a página de frota
 const PrivateRoute = ({ children }) => {
@@ -33,6 +31,7 @@ function App() {
 
   useEffect(() => {
     loadVehicles(); // Carrega os veículos ao iniciar
+    loadDrivers(); // Carrega os motoristas ao iniciar
   }, []);
 
   return (
@@ -60,11 +59,4 @@ function App() {
   );
 }
 
-
-
 export default App;
-
-
-
-
-
