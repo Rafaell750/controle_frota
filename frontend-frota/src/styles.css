@@ -1,0 +1,129 @@
+/* Define a tabela para ocupar 100% da largura e remove espaçamento entre bordas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+/* Estilo para células (cabeçalho e dados) */
+th, td {
+  border: 1px solid #696868; 
+  padding: 8px; /* Espaçamento interno */
+  text-align: left; /* Alinhamento do texto à esquerda */
+}
+
+/* Estilo específico para células do cabeçalho */
+th {
+  background-color: #f4f4f4; 
+}
+
+/* Efeito ao passar o mouse sobre as linhas da tabela */
+tr:hover {
+  background-color: #f1f1f1; 
+}
+
+/* Estilo base para botões */
+button {
+  background-color: rgb(95, 92, 92); 
+  color: white; 
+  border: none; /* Remove borda padrão */
+  padding: 5px 10px; /* Espaçamento interno */
+  cursor: pointer; /* Cursor de ponteiro ao passar o mouse */
+  border-radius: 5px; /* Cantos arredondados */
+}
+
+/* Efeito ao passar o mouse sobre botões */
+button:hover {
+  background-color: darkred; 
+}
+
+
+
+/* teste*/
+
+/* src/styles.css */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+.app-container {
+  display: flex;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
+  padding: 20px;
+  height: 100vh;
+  position: fixed;
+}
+
+.sidebar h2 {
+  text-align: center;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar nav ul li {
+  margin: 20px 0;
+}
+
+.sidebar nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  display: block;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.sidebar nav ul li a:hover {
+  background-color: #34495e;
+}
+
+.content {
+  margin-left: 270px;
+  padding: 20px;
+  width: 100%;
+}
+
+.page-container {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+/*__________________________________________________________*/
+
+.painel-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 40%;
+}
+
+.card h2 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.card p {
+  margin: 5px 0;
+  font-size: 16px;
+}

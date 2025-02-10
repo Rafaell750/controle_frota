@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
+import "./styles.css";
 import VehicleForm from "./components/VehicleForm";
 import VehicleList from "./components/VehicleList";
 import DriverForm from "./components/DriverForm";
 import DriverList from "./components/DriverList";
 import { fetchVehicles, fetchDrivers } from "./services/api";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-
-// Rota privada para proteger a página de frota
-const PrivateRoute = ({ children }) => {
-  return localStorage.getItem("token") ? children : <Navigate to="/login" />;
-};
+import Sidebar from "./components/Sidebar";
+import Veiculos from "./pages/Veiculos";
+import Motoristas from "./pages/Motoristas";
+import Painel from "./pages/Painel";
 
 function App() {
   const [vehicles, setVehicles] = useState([]);
@@ -36,25 +34,17 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/frota"
-          element={
-            <PrivateRoute>
-              <div>
-                <h1>Gerenciamento de Frota</h1>
-                <VehicleForm reloadVehicles={loadVehicles} />
-                <VehicleList vehicles={vehicles} />
-                <DriverForm reloadDrivers={loadDrivers} />
-                <DriverList drivers={drivers} />
-              </div>
-            </PrivateRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
+      <div className="app-container">
+        <Sidebar />
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<Painel />} />
+            <Route path="/motoristas" element={<Motoristas />} />
+            <Route path="/veiculos" element={<Veiculos />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
+      </div>
     </Router>
   );
 }

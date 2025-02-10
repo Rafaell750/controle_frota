@@ -32,27 +32,13 @@ def criar_tabelas():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT,
         cpf TEXT UNIQUE,
-        habilitacao TEXT,
+        telefone TEXT,
+        validade_toxicologico TEXT,
+        validade_curso TEXT,
         validade_cnh TEXT
     )""")
     conexao.commit()
     conexao.close()
-
-# Criar a tabela de usuários (execute apenas uma vez)
-conn = sqlite3.connect("frota.db")
-cursor = conn.cursor()
-
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS usuarios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        senha TEXT NOT NULL
-    )
-""")
-
-conn.commit()
-conn.close()
 
 criar_tabelas()
 
@@ -77,14 +63,18 @@ def cadastrar_motorista():
     conexao = conectar_bd()
     cursor = conexao.cursor()
     try:
-        cursor.execute("INSERT INTO motoristas (nome, cpf, habilitacao, validade_cnh) VALUES (?, ?, ?, ?)",
-                       (dados["nome"], dados["cpf"], dados["habilitacao"], dados["validade_cnh"]))
+        cursor.execute(
+            """INSERT INTO motoristas (nome, cpf, telefone, validade_toxicologico, validade_curso, validade_cnh) 
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (dados["nome"], dados["cpf"], dados["telefone"], dados["validade_toxicologico"], dados["validade_curso"], dados["validade_cnh"])
+        )
         conexao.commit()
         return jsonify({"mensagem": "Motorista cadastrado com sucesso!"}), 201
     except sqlite3.IntegrityError:
         return jsonify({"erro": "CPF já cadastrado!"}), 400
     finally:
         conexao.close()
+
 
 @app.route('/veiculos', methods=['GET'])
 def get_veiculos():
@@ -103,7 +93,7 @@ def listar_motoristas():
     cursor = conexao.cursor()
     
     # Pegando os dados
-    cursor.execute("SELECT id, nome, cpf, habilitacao, validade_cnh FROM motoristas")
+    cursor.execute("SELECT id, nome, cpf, telefone, validade_toxicologico, validade_curso, validade_cnh FROM motoristas")
     colunas = [desc[0] for desc in cursor.description]  # Captura os nomes das colunas
     motoristas = [dict(zip(colunas, row)) for row in cursor.fetchall()]  # Converte para dicionário
     
@@ -120,70 +110,25 @@ def delete_veiculo(id):
     conn.close()
     return jsonify({"message": "Veículo removido com sucesso"}), 200
 
-# Cadastro de Usuário
-@app.route("/register", methods=["POST"])
-def register():
-    data = request.json
+@app.route("/motoristas/<int:id>", methods=["DELETE"])
+def deletar_motorista(id):
+    conexao = conectar_bd()
+    cursor = conexao.cursor()
+    cursor.execute("DELETE FROM motoristas WHERE id = ?", (id,))
+    conexao.commit()
+    conexao.close()
+    return jsonify({"mensagem": "Motorista removido com sucesso!"}), 200
+ 
+@app.route('/dashboard', methods=['GET'])
+def get_dashboard_data():
+    dashboard_data = {
+        "totalUsers": 150,
+        "activeUsers": 75,
+        "newOrders": 20,
+        "revenue": 12500
+    }
+    return jsonify(dashboard_data)
 
-    # Verifica se os dados foram enviados
-    if not data:
-        return jsonify({"message": "Nenhum dado enviado"}), 400
-
-    email = data.get("email")
-    senha = data.get("password")
-
-    # Verifica se email e senha foram preenchidos
-    if not email or not senha:
-        return jsonify({"message": "Email e senha são obrigatórios"}), 400
-
-    # Criptografa a senha
-    senha_hash = bcrypt.hashpw(senha.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-
-    # Insere o usuário no banco de dados
-    conn = sqlite3.connect("frota.db")
-    cursor = conn.cursor()
-    try:
-        cursor.execute(
-            "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)",
-            ("Usuário Padrão", email, senha_hash)
-)
-        conn.commit()
-        return jsonify({"message": "Usuário cadastrado com sucesso!"}), 201
-    except sqlite3.IntegrityError:
-        return jsonify({"message": "Email já cadastrado"}), 400
-    finally:
-        conn.close()
-
-# Login de Usuário
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.json
-    email = data.get("email")
-    senha = data.get("senha")
-
-    # Verifica se email e senha foram enviados
-    if not email or not senha:
-        return jsonify({"error": "Email e senha são obrigatórios"}), 400
-
-    conn = sqlite3.connect("frota.db")
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT id, email, senha FROM usuarios WHERE email = ?", (email,))
-        user = cursor.fetchone()
-        conn.close()
-
-        if user and bcrypt.checkpw(senha.encode('utf-8'), user[2].encode('utf-8')):
-            token = pyjwt.encode(
-                {"user_id": user[0], "exp": datetime.utcnow() + timedelta(hours=1)},
-                SECRET_KEY,
-                algorithm="HS256"
-            )
-            return jsonify({"token": token, "email": user[1]}), 200
-        else:
-            return jsonify({"error": "Credenciais inválidas"}), 401
-    except Exception as e:
-        return jsonify({"error": f"Erro no servidor: {str(e)}"}), 500
-    
 
 if __name__ == "__main__":
     app.run(debug=True)

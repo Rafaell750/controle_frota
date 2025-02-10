@@ -37,38 +37,65 @@ export const addVehicle = async (vehicle) => {
   return response.json();
 };
 
-export const addDriver = async (driver) => {
-  const response = await fetch(`${API_URL}/motoristas`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(driver),
-  });
-  return response.json();
+export const addDriver = async (driverData) => {
+  try {
+    const response = await fetch(`${API_URL}/motoristas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(driverData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Erro ao adicionar motorista");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Erro na requisição:", error);
+    throw error;
+  }
 };
 
 export const deleteVehicle = async (id) => {
     await fetch(`${API_URL}/veiculos/${id}`, { method: "DELETE" });
   };
 
-  export const registerUser = async (user) => {
-    const response = await fetch(`${API_URL}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
+  export const deleteDriver = async (driverId) => {
+    const response = await fetch(`${API_URL}/motoristas/${driverId}`, {
+      method: "DELETE",
     });
+  
+    if (!response.ok) {
+      throw new Error("Erro ao excluir motorista");
+    }
   
     return response.json();
   };
   
-  export const loginUser = async (credentials) => {
-    const response = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
-  
-    return response.json();
-  };
+async function fetchDashboardData() {
+    try {
+        const response = await fetch(`${API_URL}/dashboard`);
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.statusText}`);
+        }
+        const data = await response.json();
+        renderDashboard(data);
+    } catch (error) {
+        console.error("Erro ao carregar dados do painel:", error);
+    }
+}
 
+function renderDashboard(data) {
+    document.getElementById("totalVeiculos").textContent = data.total_veiculos;
+    document.getElementById("totalMotoristas").textContent = data.total_motoristas;
+    document.getElementById("vencimentosProximos").textContent = data.vencimentos_proximos;
+}
+
+document.addEventListener("DOMContentLoaded", fetchDashboardData);
+
+
+  
   
   
