@@ -11,6 +11,7 @@ import Veiculos from "./pages/Veiculos";
 import Motoristas from "./pages/Motoristas";
 import Painel from "./pages/Painel";
 
+
 function App() {
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);

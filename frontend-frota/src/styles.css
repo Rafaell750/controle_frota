@@ -24,7 +24,7 @@ tr:hover {
 
 /* Estilo base para botões */
 button {
-  background-color: rgb(95, 92, 92); 
+  background-color: rgb(56, 55, 55); 
   color: white; 
   border: none; /* Remove borda padrão */
   padding: 5px 10px; /* Espaçamento interno */
@@ -34,7 +34,7 @@ button {
 
 /* Efeito ao passar o mouse sobre botões */
 button:hover {
-  background-color: darkred; 
+  background-color: rgb(122, 121, 121); 
 }
 
 
