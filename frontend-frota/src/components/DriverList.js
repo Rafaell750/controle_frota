@@ -8,11 +8,13 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
+import DriverForm from "./DriverForm"; // Importe o DriverForm
 
 const DriverList = () => {
   const [drivers, setDrivers] = useState([]);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [openDriverForm, setOpenDriverForm] = useState(false); // Estado para controlar o modal de cadastro
   const [selectedDriverId, setSelectedDriverId] = useState(null);
   const [currentDriver, setCurrentDriver] = useState({
     id: "",
@@ -57,12 +59,12 @@ const DriverList = () => {
     try {
       await updateDriver(currentDriver.id, currentDriver);
       alert("Motorista atualizado com sucesso!");
-      // Aqui você pode fechar o modal ou atualizar a lista de motoristas
+      setOpenEditModal(false); // Fecha o modal
+      loadDrivers(); // Atualiza a lista
     } catch (error) {
       alert(error.message); // Mostra o erro real para o usuário
     }
   };
-  
 
   const handleCloseModal = () => {
     setOpenEditModal(false);
@@ -74,11 +76,25 @@ const DriverList = () => {
 
   return (
     <div>
-      <h2>Lista de Motoristas</h2>
+      <h2>Cadastro e Lista de Motoristas</h2>
+
+      {/* Botão para abrir o formulário de cadastro */}
+      <Button variant="contained" color="primary" onClick={() => setOpenDriverForm(true)}>
+        Cadastrar Motorista
+      </Button>
+
+      {/* Modal de Cadastro de Motorista */}
+      <DriverForm
+        open={openDriverForm}
+        onClose={() => setOpenDriverForm(false)}
+        onDriverAdded={loadDrivers}
+      />
+
       {drivers.length > 0 ? (
         <table border="1" style={{ width: "100%", textAlign: "left", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ backgroundColor: "#f4f4f4" }}>
+              <th>#</th>
               <th>Nome</th>
               <th>CPF</th>
               <th>Telefone</th>
@@ -89,26 +105,31 @@ const DriverList = () => {
             </tr>
           </thead>
           <tbody>
-            {drivers.map((driver) => (
+            {drivers.map((driver, index) => (
               <tr key={driver.id}>
+                <td>{index + 1}</td>
                 <td>{driver.nome}</td>
                 <td>{driver.cpf}</td>
                 <td>{driver.telefone}</td>
                 <td>
-                  {driver.validade_toxicologico}
-                  <span>{verificarStatus(driver.validade_toxicologico)}</span>
+                  <div style={{ whiteSpace: "nowrap" }}>{driver.validade_toxicologico}</div>
+                  <div>{verificarStatus(driver.validade_toxicologico)}</div>
                 </td>
                 <td>
-                  {driver.validade_curso}
-                  <span>{verificarStatus(driver.validade_curso)}</span>
+                  <div style={{ whiteSpace: "nowrap" }}>{driver.validade_curso}</div>
+                  <div>{verificarStatus(driver.validade_curso)}</div>
                 </td>
                 <td>
-                  {driver.validade_cnh}
-                  <span>{verificarStatus(driver.validade_cnh)}</span>
+                  <div style={{ whiteSpace: "nowrap" }}>{driver.validade_cnh}</div>
+                  <div>{verificarStatus(driver.validade_cnh)}</div>
                 </td>
-                <td>
-                  <button onClick={() => handleEditClick(driver)}>✏️ Editar</button>
-                  <button onClick={() => handleDeleteClick(driver.id)}>❌ Remover</button>
+                <td style={{ whiteSpace: "nowrap" }}>
+                  <div style={{ marginBottom: "5px" }}>
+                    <button onClick={() => handleEditClick(driver)}>✏️ Editar</button>
+                  </div>
+                  <div>
+                    <button onClick={() => handleDeleteClick(driver.id)}>❌ Remover</button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -6,9 +6,11 @@ import "../styles.css";
 const Motoristas = () => {
     return (
         <div className="page-container">
-            <h2>Cadastro e Lista de Motoristas</h2>
-            <DriverForm />
-            <DriverList />
+            <h2 className="page-title">Painel Motoristas</h2>
+            <div className="content-wrapper">
+                <DriverForm />
+                <DriverList />
+            </div>
         </div>
     );
 };

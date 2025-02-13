@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 import "./styles.css";
-import VehicleForm from "./components/VehicleForm";
-import VehicleList from "./components/VehicleList";
-import DriverForm from "./components/DriverForm";
-import DriverList from "./components/DriverList";
+
 import { fetchVehicles, fetchDrivers } from "./services/api";
 import Sidebar from "./components/Sidebar";
 import Veiculos from "./pages/Veiculos";

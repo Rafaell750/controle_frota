@@ -2,8 +2,9 @@ from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 from flask_cors import CORS
 import sqlite3
-import bcrypt
-import jwt as pyjwt
+from plyer import notification
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 # Inicialização do aplicativo Flask
 app = Flask(__name__)
@@ -11,6 +12,10 @@ CORS(app)
 
 # Chave secreta para geração de tokens JWT
 SECRET_KEY = "segredo_super_secreto"
+
+# Configuração do agendador
+scheduler = BackgroundScheduler()
+scheduler.start()
 
 def conectar_bd():
     # Conecta ao banco de dados SQLite.
@@ -240,6 +245,103 @@ def atualizar_veiculo(id):
         conexao.close()
 
 
+
+
+# Função para verificar vencimentos
+def verificar_vencimentos():
+    conexao = conectar_bd()
+    cursor = conexao.cursor()
+
+    hoje = datetime.today().date()
+    alerta_pre_vencimento = hoje + timedelta(days=7)  # 7 dias antes de vencer
+
+    cursor.execute("""
+        SELECT nome, validade_toxicologico, validade_curso, validade_cnh
+        FROM motoristas
+    """)
+    
+    motoristas = cursor.fetchall()
+
+    for motorista in motoristas:
+        nome, tox, curso, cnh = motorista
+
+        tox = datetime.strptime(tox, "%Y-%m-%d").date() if tox else None
+        curso = datetime.strptime(curso, "%Y-%m-%d").date() if curso else None
+        cnh = datetime.strptime(cnh, "%Y-%m-%d").date() if cnh else None
+
+        msg = ""
+        if tox and tox < hoje:
+            msg += f"❌ Toxicológico vencido ({tox})\n"
+        elif tox and tox <= alerta_pre_vencimento:
+            msg += f"⚠️ Toxicológico vence em breve ({tox})\n"
+
+        if curso and curso < hoje:
+            msg += f"❌ Curso vencido ({curso})\n"
+        elif curso and curso <= alerta_pre_vencimento:
+            msg += f"⚠️ Curso vence em breve ({curso})\n"
+
+        if cnh and cnh < hoje:
+            msg += f"❌ CNH vencida ({cnh})\n"
+        elif cnh and cnh <= alerta_pre_vencimento:
+            msg += f"⚠️ CNH vence em breve ({cnh})\n"
+
+        if msg:
+            notification.notify(
+                title=f"🚨 Aviso para {nome}",
+                message=msg,
+                app_name="Gestão de Motoristas",
+                timeout=10
+            )
+    
+     # Verificar vencimentos dos veículos
+    cursor.execute("""
+        SELECT placa, data_vencimento, data_manutencao
+        FROM veiculos
+    """)
+    veiculos = cursor.fetchall()
+
+    for veiculo in veiculos:
+        placa, vencimento, manutencao = veiculo
+
+        vencimento = datetime.strptime(vencimento, "%Y-%m-%d").date() if vencimento else None
+        manutencao = datetime.strptime(manutencao, "%Y-%m-%d").date() if manutencao else None
+
+        msg = ""
+        if vencimento and vencimento < hoje:
+            msg += f"❌ Vencimento do seguro vencido ({vencimento})\n"
+        elif vencimento and vencimento <= alerta_pre_vencimento:
+            msg += f"⚠️ Vencimento do seguro vence em breve ({vencimento})\n"
+
+        if manutencao and manutencao < hoje:
+            msg += f"❌ Manutenção vencida ({manutencao})\n"
+        elif manutencao and manutencao <= alerta_pre_vencimento:
+            msg += f"⚠️ Manutenção vence em breve ({manutencao})\n"
+
+        if msg:
+            notification.notify(
+                title=f"🚨 Aviso para Veículo {placa}",
+                message=msg,
+                app_name="Gestão de Veículos",
+                timeout=10
+            )
+    
+    conexao.close()
+
+# Agendamento da verificação de vencimentos
+scheduler.add_job(
+    func=verificar_vencimentos,
+    trigger="interval",
+    hours=1,  # Verifica a cada 1 hora
+    #minutes=1,  # para testes 1 minuto
+    id="verificar_vencimentos",
+    name="Verificar vencimentos de motoristas",
+    replace_existing=True
+)
+
+
+
+
 # Inicia o servidor Flask
 if __name__ == "__main__":
+    verificar_vencimentos()  # Executa a verificação ao iniciar o servidor
     app.run(debug=True)

@@ -91,19 +91,19 @@ const Painel = () => {
                 Total cadastrados: {totalMotoristas}
               </Typography>
               <StatusItem
-                label="CNH"
+                label="CNH:"
                 emDia={cnhStatus.emDia}
                 prestesVencer={cnhStatus.prestesVencer}
                 vencido={cnhStatus.vencido}
               />
               <StatusItem
-                label="Exame Toxicológico"
+                label="Exame Toxicológico:"
                 emDia={toxicoStatus.emDia}
                 prestesVencer={toxicoStatus.prestesVencer}
                 vencido={toxicoStatus.vencido}
               />
               <StatusItem
-                label="Curso"
+                label="Curso:"
                 emDia={cursoStatus.emDia}
                 prestesVencer={cursoStatus.prestesVencer}
                 vencido={cursoStatus.vencido}
@@ -126,13 +126,13 @@ const Painel = () => {
                 Total cadastrados: {totalVeiculos}
               </Typography>
               <StatusItem
-                label="Manutenção"
+                label="Manutenção:"
                 emDia={manutencaoStatus.emDia}
                 prestesVencer={manutencaoStatus.prestesVencer}
                 vencido={manutencaoStatus.vencido}
               />
               <StatusItem
-                label="Seguro"
+                label="Seguro:"
                 emDia={seguroStatus.emDia}
                 prestesVencer={seguroStatus.prestesVencer}
                 vencido={seguroStatus.vencido}
@@ -153,16 +153,16 @@ const StatusItem = ({ label, emDia, prestesVencer, vencido }) => (
     </Typography>
     <Box display="flex" alignItems="center" mt={1}>
       <EmDiaIcon fontSize="small" color="success" />
-      <Typography variant="body2" sx={{ ml: 1, mr: 2 }}>
-        Em dia: {emDia}
+      <Typography variant="body2" sx={{ ml: 1, mr: 2, fontWeight: "bold", fontSize: "1.2rem", color: "#4caf50" }}>
+        Em dia - {emDia}
       </Typography>
       <PrestesVencerIcon fontSize="small" color="warning" />
-      <Typography variant="body2" sx={{ ml: 1, mr: 2 }}>
-        Prestes a vencer: {prestesVencer}
+      <Typography variant="body2" sx={{ ml: 1, mr: 2, fontWeight: "bold", fontSize: "1.2rem", color: "#ff9800" }}>
+        Prestes a vencer - {prestesVencer}
       </Typography>
       <VencidoIcon fontSize="small" color="error" />
-      <Typography variant="body2" sx={{ ml: 1 }}>
-        Vencido: {vencido}
+      <Typography variant="body2" sx={{ ml: 1, fontWeight: "bold", fontSize: "1.2rem", color: "#f44336" }}>
+        Vencido - {vencido}
       </Typography>
     </Box>
   </Box>

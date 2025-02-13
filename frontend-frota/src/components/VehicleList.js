@@ -8,11 +8,13 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
+import VehicleForm from "./VehicleForm"; // Importe o VehicleForm
 
 const VehicleList = () => {
   const [vehicles, setVehicles] = useState([]);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [openVehicleForm, setOpenVehicleForm] = useState(false); // Estado para controlar o modal de cadastro
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
   const [currentVehicle, setCurrentVehicle] = useState({
     id: "",
@@ -52,19 +54,18 @@ const VehicleList = () => {
     setOpenEditModal(true);
   };
 
-const handleEditSubmit = async (event) => {
-  event.preventDefault();
+  const handleEditSubmit = async (event) => {
+    event.preventDefault();
   
-  try {
-    await updateVehicle(currentVehicle.id, currentVehicle);
-    alert("Veículo atualizado com sucesso!");
-    // Aqui você pode fechar o modal ou atualizar a lista de veículos
-  } catch (error) {
-    alert(error.message); // Mostra o erro real para o usuário
-  }
-};
-
-  
+    try {
+      await updateVehicle(currentVehicle.id, currentVehicle);
+      alert("Veículo atualizado com sucesso!");
+      setOpenEditModal(false); // Fecha o modal
+      loadVehicles(); // Atualiza a lista
+    } catch (error) {
+      alert(error.message); // Mostra o erro real para o usuário
+    }
+  };
 
   const handleCloseModal = () => {
     setOpenEditModal(false);
@@ -76,11 +77,25 @@ const handleEditSubmit = async (event) => {
 
   return (
     <div>
-      <h2>Lista de Veículos</h2>
+      <h2>Cadastro e Lista de Veículos</h2>
+
+      {/* Botão para abrir o formulário de cadastro */}
+      <Button variant="contained" color="primary" onClick={() => setOpenVehicleForm(true)}>
+        Cadastrar Veículo
+      </Button>
+
+      {/* Modal de Cadastro de Veículo */}
+      <VehicleForm
+        open={openVehicleForm}
+        onClose={() => setOpenVehicleForm(false)}
+        onVehicleAdded={loadVehicles}
+      />
+
       {vehicles.length > 0 ? (
         <table border="1" style={{ width: "100%", textAlign: "left", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ backgroundColor: "#f4f4f4" }}>
+              <th>#</th>
               <th>Marca</th>
               <th>Modelo</th>
               <th>Placa</th>
@@ -92,22 +107,29 @@ const handleEditSubmit = async (event) => {
             </tr>
           </thead>
           <tbody>
-            {vehicles.map((vehicle) => (
-              <tr key={vehicle.id}>              
+            {vehicles.map((vehicle, index) => (
+              <tr key={vehicle.id}>
+                <td>{index + 1}</td>
                 <td>{vehicle.marca}</td>
                 <td>{vehicle.modelo}</td>
                 <td>{vehicle.placa}</td>
                 <td>{vehicle.tipo}</td>
                 <td>{vehicle.capacidade}</td>
                 <td>
-                  {vehicle.data_vencimento} <span>{verificarStatus(vehicle.data_vencimento)}</span>
+                  <div style={{ whiteSpace: "nowrap" }}>{vehicle.data_vencimento}</div>
+                  <div>{verificarStatus(vehicle.data_vencimento)}</div>
                 </td>
                 <td>
-                  {vehicle.data_manutencao} <span>{verificarStatus(vehicle.data_manutencao)}</span>
+                  <div style={{ whiteSpace: "nowrap" }}>{vehicle.data_manutencao}</div>
+                  <div>{verificarStatus(vehicle.data_manutencao)}</div>
                 </td>
-                <td>
-                  <button onClick={() => handleEditClick(vehicle)}>✏️ Editar</button>
-                  <button onClick={() => handleDeleteClick(vehicle.id)}>❌ Remover</button>
+                <td style={{ whiteSpace: "nowrap" }}>
+                  <div style={{ marginBottom: "5px" }}>
+                    <button onClick={() => handleEditClick(vehicle)}>✏️ Editar</button>
+                  </div>
+                  <div>
+                    <button onClick={() => handleDeleteClick(vehicle.id)}>❌ Remover</button>
+                  </div>
                 </td>
               </tr>
             ))}
