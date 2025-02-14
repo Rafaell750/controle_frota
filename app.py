@@ -344,4 +344,4 @@ scheduler.add_job(
 # Inicia o servidor Flask
 if __name__ == "__main__":
     verificar_vencimentos()  # Executa a verificação ao iniciar o servidor
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
