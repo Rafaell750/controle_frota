@@ -1,5 +1,6 @@
 # 1️⃣ Etapa de construção do React
 FROM node:18-alpine AS builder
+
 WORKDIR /app
 
 # Copia os arquivos necessários e instala as dependências
@@ -12,8 +13,8 @@ RUN npm run build
 
 # 2️⃣ Etapa de produção com Nginx
 FROM nginx:alpine
-COPY --from=builder . /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expõe a porta onde o Nginx vai rodar
 EXPOSE 80

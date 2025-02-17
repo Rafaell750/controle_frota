@@ -338,6 +338,9 @@ scheduler.add_job(
     replace_existing=True
 )
 
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"mensagem": "API funcionando!"})
 
 
 
