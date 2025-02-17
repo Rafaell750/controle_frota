@@ -12,7 +12,7 @@ RUN npm run build
 
 # 2️⃣ Etapa de produção com Nginx
 FROM nginx:alpine
-COPY --from=builder . /usr/share/nginx/html
+COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/
 
 # Expõe a porta onde o Nginx vai rodar
