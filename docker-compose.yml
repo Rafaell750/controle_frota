@@ -8,8 +8,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - .:/app
-      - sqlite-data:/app/data  # Volume para persistir dados do SQLite
+      - ./frota.db:/app/frota.db  # Monta o banco diretamente na raiz do container
     environment:
       - FLASK_ENV=development
 
@@ -21,6 +20,3 @@ services:
       - "80:80"
     depends_on:
       - backend
-
-volumes:
-  sqlite-data:
