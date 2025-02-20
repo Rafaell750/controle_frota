@@ -2,13 +2,13 @@ from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 from flask_cors import CORS
 import sqlite3
-from plyer import notification
 from apscheduler.schedulers.background import BackgroundScheduler
-
+from flask_socketio import SocketIO, emit  # Adicione esta linha
 
 # Inicialização do aplicativo Flask
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")  # Adicione esta linha
 
 # Chave secreta para geração de tokens JWT
 SECRET_KEY = "segredo_super_secreto"
@@ -286,14 +286,10 @@ def verificar_vencimentos():
             msg += f"⚠️ CNH vence em breve ({cnh})\n"
 
         if msg:
-            notification.notify(
-                title=f"🚨 Aviso para {nome}",
-                message=msg,
-                app_name="Gestão de Motoristas",
-                timeout=10
-            )
+            # Envia a notificação para o frontend via WebSocket
+            socketio.emit("notificacao", {"titulo": f"🚨 Aviso para {nome}", "mensagem": msg})
     
-     # Verificar vencimentos dos veículos
+    # Verificar vencimentos dos veículos
     cursor.execute("""
         SELECT placa, data_vencimento, data_manutencao
         FROM veiculos
@@ -318,12 +314,8 @@ def verificar_vencimentos():
             msg += f"⚠️ Manutenção vence em breve ({manutencao})\n"
 
         if msg:
-            notification.notify(
-                title=f"🚨 Aviso para Veículo {placa}",
-                message=msg,
-                app_name="Gestão de Veículos",
-                timeout=10
-            )
+            # Envia a notificação para o frontend via WebSocket
+            socketio.emit("notificacao", {"titulo": f"🚨 Aviso para Veículo {placa}", "mensagem": msg})
     
     conexao.close()
 
@@ -347,4 +339,5 @@ def home():
 # Inicia o servidor Flaskk
 if __name__ == "__main__":
     verificar_vencimentos()  # Executa a verificação ao iniciar o servidor
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    #app.run(host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)  # Use socketio.run em vez de app.run

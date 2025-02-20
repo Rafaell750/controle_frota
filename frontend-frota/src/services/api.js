@@ -1,5 +1,7 @@
 // URL base da API
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "http://127.0.0.1:5000"; // API para testes (localhost)
+//const API_URL = "http://172.16.21.12:5000"; // API servidor final
+
 
 /**
  * Função para buscar a lista de veículos da API.
