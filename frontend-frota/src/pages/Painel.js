@@ -65,6 +65,8 @@ const Painel = () => {
   const totalVeiculos = vehicles.length;
   const manutencaoStatus = countByStatus(vehicles, "data_manutencao");
   const seguroStatus = countByStatus(vehicles, "data_vencimento");
+  const tacografoStatus = countByStatus(vehicles, "data_tacografo");
+  
 
   if (loading) {
     return (
@@ -136,6 +138,12 @@ const Painel = () => {
                 emDia={seguroStatus.emDia}
                 prestesVencer={seguroStatus.prestesVencer}
                 vencido={seguroStatus.vencido}
+              />
+              <StatusItem
+                label="Tacógrafo:"
+                emDia={tacografoStatus.emDia}
+                prestesVencer={tacografoStatus.prestesVencer}
+                vencido={tacografoStatus.vencido}
               />
             </CardContent>
           </Card>

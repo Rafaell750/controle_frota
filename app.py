@@ -31,11 +31,13 @@ def criar_tabelas():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         marca TEXT,
         modelo TEXT,
+        ano_do_veiculo TEXT,
         placa TEXT UNIQUE,
         tipo TEXT,
         capacidade INTEGER,
         data_vencimento TEXT,
-        data_manutencao TEXT
+        data_manutencao TEXT,
+        data_tacografo TEXT
     )""")
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS motoristas (
@@ -65,16 +67,18 @@ def cadastrar_veiculo():
     cursor = conexao.cursor()
     try:
         cursor.execute("""
-            INSERT INTO veiculos (marca, modelo, placa, tipo, capacidade, data_vencimento, data_manutencao)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO veiculos (marca, modelo, ano_do_veiculo, placa, tipo, capacidade, data_vencimento, data_manutencao, data_tacografo)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             dados["marca"],
             dados["modelo"],
+            dados["ano_do_veiculo"],
             dados["placa"],
             dados["tipo"],
             dados["capacidade"],
             dados["data_vencimento"],
-            dados["data_manutencao"]
+            dados["data_manutencao"],
+            dados["data_tacografo"]
         ))
         conexao.commit()
         return jsonify({"mensagem": "Veículo cadastrado com sucesso!"}), 201
@@ -218,16 +222,18 @@ def atualizar_veiculo(id):
         # Atualizar o veículo se a placa não estiver duplicada
         cursor.execute("""
             UPDATE veiculos
-            SET marca = ?, modelo = ?, placa = ?, tipo = ?, capacidade = ?, data_vencimento = ?, data_manutencao = ?
+            SET marca = ?, modelo = ?, ano_do_veiculo = ?, placa = ?, tipo = ?, capacidade = ?, data_vencimento = ?, data_manutencao = ?, data_tacografo = ?
             WHERE id = ?
         """, (
             dados["marca"],
             dados["modelo"],
+            dados["ano_do_veiculo"],
             dados["placa"],
             dados["tipo"],
             dados["capacidade"],
             dados["data_vencimento"],
             dados["data_manutencao"],
+            dados["data_tacografo"],
             id
         ))
 
@@ -291,16 +297,17 @@ def verificar_vencimentos():
     
     # Verificar vencimentos dos veículos
     cursor.execute("""
-        SELECT placa, data_vencimento, data_manutencao
+        SELECT placa, data_vencimento, data_manutencao, data_tacografo
         FROM veiculos
     """)
     veiculos = cursor.fetchall()
 
     for veiculo in veiculos:
-        placa, vencimento, manutencao = veiculo
+        placa, vencimento, manutencao, tacografo = veiculo
 
         vencimento = datetime.strptime(vencimento, "%Y-%m-%d").date() if vencimento else None
         manutencao = datetime.strptime(manutencao, "%Y-%m-%d").date() if manutencao else None
+        tacografo = datetime.strptime(tacografo, "%Y-%m-%d").date() if tacografo else None
 
         msg = ""
         if vencimento and vencimento < hoje:
@@ -312,6 +319,11 @@ def verificar_vencimentos():
             msg += f"❌ Manutenção vencida ({manutencao})\n"
         elif manutencao and manutencao <= alerta_pre_vencimento:
             msg += f"⚠️ Manutenção vence em breve ({manutencao})\n"
+        
+        if tacografo and tacografo < hoje:
+            msg += f"❌ Tacógrafo vencido ({tacografo})\n"
+        elif tacografo and tacografo <= alerta_pre_vencimento:
+            msg += f"⚠️ Tacógrafo vence em breve ({tacografo})\n"
 
         if msg:
             # Envia a notificação para o frontend via WebSocket

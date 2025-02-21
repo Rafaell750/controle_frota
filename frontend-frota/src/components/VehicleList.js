@@ -20,11 +20,13 @@ const VehicleList = () => {
     id: "",
     marca: "",
     modelo: "",
+    ano_do_veiculo: "",
     placa: "",
     tipo: "",
     capacidade: "",
     data_vencimento: "",
     data_manutencao: "",
+    data_tacografo: "",
   });
 
   useEffect(() => {
@@ -98,11 +100,13 @@ const VehicleList = () => {
               <th>#</th>
               <th>Marca</th>
               <th>Modelo</th>
+              <th>Ano Veículo</th>
               <th>Placa</th>
               <th>Tipo</th>
               <th>Capacidade</th>
               <th>Ven. Seguro</th>
-              <th>Ven. Manutenção</th>
+              <th>Ven. Vistoria</th>
+              <th>Ven. Tacógrafo</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -112,6 +116,7 @@ const VehicleList = () => {
                 <td>{index + 1}</td>
                 <td>{vehicle.marca}</td>
                 <td>{vehicle.modelo}</td>
+                <td>{vehicle.ano_do_veiculo}</td>
                 <td>{vehicle.placa}</td>
                 <td>{vehicle.tipo}</td>
                 <td>{vehicle.capacidade}</td>
@@ -122,6 +127,10 @@ const VehicleList = () => {
                 <td>
                   <div style={{ whiteSpace: "nowrap" }}>{vehicle.data_manutencao}</div>
                   <div>{verificarStatus(vehicle.data_manutencao)}</div>
+                </td>
+                <td>
+                  <div style={{ whiteSpace: "nowrap" }}>{vehicle.data_tacografo}</div>
+                  <div>{verificarStatus(vehicle.data_tacografo)}</div>
                 </td>
                 <td style={{ whiteSpace: "nowrap" }}>
                   <div style={{ marginBottom: "5px" }}>
@@ -155,6 +164,14 @@ const VehicleList = () => {
             name="modelo"
             label="Modelo"
             value={currentVehicle.modelo}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="ano_do_veiculo"
+            label="Ano do Veículo"
+            value={currentVehicle.ano_do_veiculo}
             onChange={handleChange}
             fullWidth
             margin="normal"
@@ -196,9 +213,19 @@ const VehicleList = () => {
           />
           <TextField
             name="data_manutencao"
-            label="Data de Manutenção"
+            label="Vencimento da Vistoria"
             type="date"
             value={currentVehicle.data_manutencao}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            name="data_tacografo"
+            label="Validade Tacógrafo"
+            type="date"
+            value={currentVehicle.data_tacografo}
             onChange={handleChange}
             fullWidth
             margin="normal"

@@ -45,12 +45,24 @@ export const fetchDrivers = async () => {
  * returns {Promise<Object>} Retorna a resposta da API.
  */
 export const addVehicle = async (vehicle) => {
-  const response = await fetch(`${API_URL}/veiculos`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(vehicle),
-  });
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/veiculos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(vehicle),
+    });
+
+    const data = await response.json(); // Captura a resposta JSON
+
+    if (!response.ok) {
+      throw new Error(data.erro || "Erro ao cadastrar veículo"); // Lança o erro com a mensagem do backend
+    }
+
+    return data; // Retorna os dados em caso de sucesso
+  } catch (error) {
+    console.error("Erro ao cadastrar veículo:", error);
+    throw error; // Propaga o erro para ser tratado no componente
+  }
 };
 
 /**
