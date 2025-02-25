@@ -128,7 +128,7 @@ const Painel = () => {
                 Total cadastrados: {totalVeiculos}
               </Typography>
               <StatusItem
-                label="Manutenção:"
+                label="Vistoria:"
                 emDia={manutencaoStatus.emDia}
                 prestesVencer={manutencaoStatus.prestesVencer}
                 vencido={manutencaoStatus.vencido}

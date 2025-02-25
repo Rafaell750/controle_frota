@@ -77,6 +77,12 @@ const VehicleList = () => {
     setCurrentVehicle({ ...currentVehicle, [e.target.name]: e.target.value });
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return ""; // Evita erros caso o valor seja nulo
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div>
       <h2>Cadastro e Lista de Veículos</h2>
@@ -116,20 +122,20 @@ const VehicleList = () => {
                 <td>{index + 1}</td>
                 <td>{vehicle.marca}</td>
                 <td>{vehicle.modelo}</td>
-                <td>{vehicle.ano_do_veiculo}</td>
+                <td style={{ textAlign: "center" }}>{vehicle.ano_do_veiculo}</td>
                 <td>{vehicle.placa}</td>
                 <td>{vehicle.tipo}</td>
-                <td>{vehicle.capacidade}</td>
+                <td style={{ textAlign: "center" }}>{vehicle.capacidade}</td>
                 <td>
-                  <div style={{ whiteSpace: "nowrap" }}>{vehicle.data_vencimento}</div>
+                  <div style={{ whiteSpace: "nowrap" }}>{formatDate(vehicle.data_vencimento)}</div>
                   <div>{verificarStatus(vehicle.data_vencimento)}</div>
                 </td>
                 <td>
-                  <div style={{ whiteSpace: "nowrap" }}>{vehicle.data_manutencao}</div>
+                  <div style={{ whiteSpace: "nowrap" }}>{formatDate(vehicle.data_manutencao)}</div>
                   <div>{verificarStatus(vehicle.data_manutencao)}</div>
                 </td>
                 <td>
-                  <div style={{ whiteSpace: "nowrap" }}>{vehicle.data_tacografo}</div>
+                  <div style={{ whiteSpace: "nowrap" }}>{formatDate(vehicle.data_tacografo)}</div>
                   <div>{verificarStatus(vehicle.data_tacografo)}</div>
                 </td>
                 <td style={{ whiteSpace: "nowrap" }}>

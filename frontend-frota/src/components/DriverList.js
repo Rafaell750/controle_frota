@@ -74,6 +74,12 @@ const DriverList = () => {
     setCurrentDriver({ ...currentDriver, [e.target.name]: e.target.value });
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return ""; // Evita erros caso o valor seja nulo
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div>
       <h2>Cadastro e Lista de Motoristas</h2>
@@ -112,15 +118,15 @@ const DriverList = () => {
                 <td>{driver.cpf}</td>
                 <td>{driver.telefone}</td>
                 <td>
-                  <div style={{ whiteSpace: "nowrap" }}>{driver.validade_toxicologico}</div>
+                  <div style={{ whiteSpace: "nowrap" }}>{formatDate(driver.validade_toxicologico)}</div>
                   <div>{verificarStatus(driver.validade_toxicologico)}</div>
                 </td>
                 <td>
-                  <div style={{ whiteSpace: "nowrap" }}>{driver.validade_curso}</div>
+                  <div style={{ whiteSpace: "nowrap" }}>{formatDate(driver.validade_curso)}</div>
                   <div>{verificarStatus(driver.validade_curso)}</div>
                 </td>
                 <td>
-                  <div style={{ whiteSpace: "nowrap" }}>{driver.validade_cnh}</div>
+                  <div style={{ whiteSpace: "nowrap" }}>{formatDate(driver.validade_cnh)}</div>
                   <div>{verificarStatus(driver.validade_cnh)}</div>
                 </td>
                 <td style={{ whiteSpace: "nowrap" }}>
