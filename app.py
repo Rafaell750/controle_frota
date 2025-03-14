@@ -351,5 +351,5 @@ def home():
 # Inicia o servidor Flaskk
 if __name__ == "__main__":
     verificar_vencimentos()  # Executa a verificação ao iniciar o servidor
-    #app.run(host="0.0.0.0", port=5000, debug=True)
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)  # Use socketio.run em vez de app.run
+    app.run(host="0.0.0.0", port=5000, debug=True)
+    #socketio.run(app, host="0.0.0.0", port=5000, debug=True)  # Use socketio.run em vez de app.run
